@@ -11,6 +11,9 @@ except ImportError:
     raise ImportError('You should use Python 3.x');
 from PIL import Image;
 
+#让numpy不以科学计数法输出结果，否则看着太费劲了
+np.set_printoptions(suppress = True);
+
 mnistBaseUrl = "http://yann.lecun.com/exdb/mnist/";
 fileMap = {
     "trainImg": "train-images-idx3-ubyte.gz",
@@ -106,14 +109,55 @@ def getMnist (normalize = True, flatten = True, oneHotLabel = False):
 # 显示图片和标签方法
 def showImgAndLabel (img, label):
     img = img.reshape((28, 28));
+    print(label);
     pilImg = Image.fromarray(np.uint8(img));
     pilImg.show();
-    print(label);  
+
+def sigmoid (x):
+    return 1 / (1 + np.exp(-x));
+
+def softmax (x):
+    c = np.max(x);
+    expA = np.exp(x - c);
+    sumExpA = np.sum(expA);
+    y = expA / sumExpA;
+    return y;
+
+# 读取网络数据
+def initNetwork ():
+    network = { };
+    with open("../mnist/sample_weight.pkl", "rb") as f:
+        network = pickle.load(f);
+    return network;
+
+def predict (img, network):
+    w1, w2, w3 = network["W1"], network["W2"], network["W3"];
+    b1, b2, b3 = network["b1"], network["b2"], network["b3"];  
+    a1 = np.dot(img, w1) + b1;
+    z1 = sigmoid(a1);
+    a2 = np.dot(z1, w2) + b2;
+    z2 = sigmoid(a2);
+    a3 = np.dot(z2, w3) + b3;
+    y = softmax(a3);
+    return y;
+
+# 用测试数据验证模型精度
+def accuracy (imgs, labels, network):
+    success  = 0;
+    for index, img in enumerate(imgs):
+        y = predict(img, network);
+        p = np.argmax(y);
+        if (p == labels[index]):
+            success += 1;
+    return float(success) / len(testImg);
 
 if (__name__ == "__main__"):
-    result = getMnist(False, True, True);
-    index = 99;
-
+    result = getMnist(True, True, False);
+    index = 677;
     img = result[1][0][index];
     label = result[1][1][index];
-    showImgAndLabel(img, label);
+    # showImgAndLabel(img, label);
+    network = initNetwork();
+    testImg = result[1][0];
+    testLabel = result[1][1];
+    print(accuracy(testImg, testLabel, network));
