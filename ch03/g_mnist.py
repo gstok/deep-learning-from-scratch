@@ -9,6 +9,7 @@ try:
     import urllib.request;
 except ImportError:
     raise ImportError('You should use Python 3.x');
+from PIL import Image;
 
 mnistBaseUrl = "http://yann.lecun.com/exdb/mnist/";
 fileMap = {
@@ -102,6 +103,17 @@ def getMnist (normalize = True, flatten = True, oneHotLabel = False):
         ),
     );
 
+# 显示图片和标签方法
+def showImgAndLabel (img, label):
+    img = img.reshape((28, 28));
+    pilImg = Image.fromarray(np.uint8(img));
+    pilImg.show();
+    print(label);  
+
 if (__name__ == "__main__"):
-    downloadMnist(mnistBaseUrl, fileMap, downDir);
-    loadMnist(downDir, fileMap, pklFile);
+    result = getMnist(False, True, True);
+    index = 99;
+
+    img = result[1][0][index];
+    label = result[1][1][index];
+    showImgAndLabel(img, label);
