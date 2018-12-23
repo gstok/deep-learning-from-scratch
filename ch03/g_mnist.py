@@ -40,7 +40,7 @@ def loadImg (imgPath):
         fileBuf = f.read();
         data = np.frombuffer(fileBuf, np.uint8, offset = 16);
     data = data.reshape(-1, 784);
-    print(data.shape);
+    # print(data.shape);
     return data;
 
 # 加载标签数据方法
@@ -48,7 +48,7 @@ def loadLabel (labelPath):
     with gzip.open(labelPath) as f:
         fileBuf = f.read();
         data = np.frombuffer(fileBuf, np.uint8, offset = 8);
-    print(data.shape);
+    # print(data.shape);
     return data;
 
 # 加载mnist数据集
@@ -69,6 +69,39 @@ def loadMnist (downDir, fileMap, pklFile):
             pickle.dump(result, f, -1);
     return result;
 
-downloadMnist(mnistBaseUrl, fileMap, downDir);
-result = loadMnist(downDir, fileMap, pklFile);
-print(result);
+# 修改标签为OneHot模式
+def changeOneHotLabel (data):
+    newData = np.zeros((data.size, 10))
+    for idx, row in enumerate(newData):
+        row[data[idx]] = 1;
+    return newData;
+
+# 对外开放的获取Mnist接口
+def getMnist (normalize = True, flatten = True, oneHotLabel = False):
+    downloadMnist(mnistBaseUrl, fileMap, downDir);
+    result = loadMnist(downDir, fileMap, pklFile);
+    if (normalize):
+        result["trainImg"] = result["trainImg"].astype(np.float);
+        result["trainImg"] /= 255.0;
+        result["testImg"] = result["testImg"].astype(np.float);
+        result["testImg"] /= 255.0;
+    if (not flatten):
+        result["trainImg"] = result["trainImg"].reshape(-1, 1, 28, 28);
+        result["testImg"] = result["testImg"].reshape(-1, 1, 28, 28);
+    if (oneHotLabel):
+        result["trainLabel"] = changeOneHotLabel(result["trainLabel"]);
+        result["testLabel"] = changeOneHotLabel(result["testLabel"]);
+    return (
+        (
+            result["trainImg"],
+            result["trainLabel"]
+        ),
+        (
+            result["testImg"],
+            result["testLabel"]
+        ),
+    );
+
+if (__name__ == "__main__"):
+    downloadMnist(mnistBaseUrl, fileMap, downDir);
+    loadMnist(downDir, fileMap, pklFile);
