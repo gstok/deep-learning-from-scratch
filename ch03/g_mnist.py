@@ -113,9 +113,11 @@ def showImgAndLabel (img, label):
     pilImg = Image.fromarray(np.uint8(img));
     pilImg.show();
 
+# sigmoid激活函数
 def sigmoid (x):
     return 1 / (1 + np.exp(-x));
 
+# softmax函数，此函数的作用是取0~1的概率分布
 def softmax (x):
     c = np.max(x);
     expA = np.exp(x - c);
@@ -130,6 +132,7 @@ def initNetwork ():
         network = pickle.load(f);
     return network;
 
+# 利用模型对图像进行分类预测
 def predict (img, network):
     w1, w2, w3 = network["W1"], network["W2"], network["W3"];
     b1, b2, b3 = network["b1"], network["b2"], network["b3"];  
@@ -141,7 +144,7 @@ def predict (img, network):
     y = softmax(a3);
     return y;
 
-# 用测试数据验证模型精度
+# 用测试数据验证模型精度，返回测试精度
 def accuracy (imgs, labels, network):
     success  = 0;
     for index, img in enumerate(imgs):
