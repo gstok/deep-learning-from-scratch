@@ -168,6 +168,14 @@ def accuracyBatch (imgs, labels, network):
         success += np.sum(b);
     return float(success) / len(imgs);
 
+# 损失函数之交叉熵函数
+# 输入为0 ~ 1，这个值是softmax函数返回的概率值
+# 输出为-无穷大 ~ 0，这个值是交叉熵，用来做损失函数的值
+# 输入越接近0，输出越大，输入越接近1，输出越接近0
+def crossEntropyError (x, t):
+    delta = 1e-7;
+    return np.sum((t * np.log(x + delta)));
+
 if (__name__ == "__main__"):
     result = getMnist(True, True, False);
     index = 677;
