@@ -4,6 +4,7 @@
 import os.path;
 import pickle;
 import gzip;
+import time;
 import numpy as np;
 try:
     import urllib.request;
@@ -152,7 +153,20 @@ def accuracy (imgs, labels, network):
         p = np.argmax(y);
         if (p == labels[index]):
             success += 1;
-    return float(success) / len(testImg);
+    return float(success) / len(imgs);
+
+# 使用批处理的方法对于测试数据验证精度
+def accuracyBatch (imgs, labels, network):
+    batchSize = 1000;
+    success  = 0;
+    for index in range(0, len(imgs), batchSize):
+        imgsBat = imgs[index : index + batchSize];
+        labelsBat = labels[index : index + batchSize];
+        y = predict(imgsBat, network);
+        p = np.argmax(y, axis = 1);
+        b = p == labelsBat;
+        success += np.sum(b);
+    return float(success) / len(imgs);
 
 if (__name__ == "__main__"):
     result = getMnist(True, True, False);
@@ -163,4 +177,15 @@ if (__name__ == "__main__"):
     network = initNetwork();
     testImg = result[1][0];
     testLabel = result[1][1];
-    print(accuracy(testImg, testLabel, network));
+    # print(accuracy(testImg, testLabel, network));
+    t1 = time.time();
+    result1 = accuracy(testImg, testLabel, network);
+    t2 = time.time();
+    print(result1);
+    print(t2 - t1);
+
+    t1 = time.time();
+    result2 = accuracyBatch(testImg, testLabel, network);
+    t2 = time.time();
+    print(result2);
+    print(t2 - t1);
