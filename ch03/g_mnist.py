@@ -136,7 +136,7 @@ def initNetwork ():
 # 利用模型对图像进行分类预测
 def predict (img, network):
     w1, w2, w3 = network["W1"], network["W2"], network["W3"];
-    b1, b2, b3 = network["b1"], network["b2"], network["b3"];  
+    b1, b2, b3 = network["b1"], network["b2"], network["b3"];
     a1 = np.dot(img, w1) + b1;
     z1 = sigmoid(a1);
     a2 = np.dot(z1, w2) + b2;
@@ -174,26 +174,44 @@ def accuracyBatch (imgs, labels, network):
 # 输入越接近0，输出越大，输入越接近1，输出越接近0
 def crossEntropyError (x, t):
     delta = 1e-7;
-    return np.sum((t * np.log(x + delta)));
+    return -np.sum((t * np.log(x + delta)));
+
+# miniBatch计算交叉熵
+def crossEntropyErrorMB (x, t):
+    if (x.ndim == 1):
+        t = t.reshape(1, t.size);
+        x = x.reshape(1, x.size);
+    batchSize = x.shape[0];
+    return -np.sum(t * np.log(x + 1e-7)) / batchSize;
 
 if (__name__ == "__main__"):
-    result = getMnist(True, True, False);
-    index = 677;
-    img = result[1][0][index];
-    label = result[1][1][index];
+    result = getMnist(True, True, True);
+
     # showImgAndLabel(img, label);
     network = initNetwork();
     testImg = result[1][0];
     testLabel = result[1][1];
     # print(accuracy(testImg, testLabel, network));
-    t1 = time.time();
-    result1 = accuracy(testImg, testLabel, network);
-    t2 = time.time();
-    print(result1);
-    print(t2 - t1);
+    # t1 = time.time();
+    # result1 = accuracy(testImg, testLabel, network);
+    # t2 = time.time();
+    # print(result1);
+    # print(t2 - t1);
 
-    t1 = time.time();
-    result2 = accuracyBatch(testImg, testLabel, network);
-    t2 = time.time();
-    print(result2);
-    print(t2 - t1);
+    # t1 = time.time();
+    # result2 = accuracyBatch(testImg, testLabel, network);
+    # t2 = time.time();
+    # print(result2);
+    # print(t2 - t1);
+
+    index = 685;
+    img = result[1][0][index];
+    label = result[1][1][index];
+    y = predict(img, network);
+    r = np.argmax(y);
+    print(y);
+    print(label);
+    print(r);
+    # ce = crossEntropyError(y, label);
+    ce = crossEntropyErrorMB(y, label);
+    print(ce);
