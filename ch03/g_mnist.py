@@ -6,11 +6,14 @@ import pickle;
 import gzip;
 import time;
 import numpy as np;
+import sys, os;
 try:
     import urllib.request;
 except ImportError:
     raise ImportError('You should use Python 3.x');
 from PIL import Image;
+sys.path.append(os.pardir);
+from common.gradient import numerical_gradient as numericalGradient;
 
 #让numpy不以科学计数法输出结果，否则看着太费劲了
 np.set_printoptions(suppress = True);
@@ -193,7 +196,7 @@ def numericalDiff (f, x):
 def func (npay):
     return np.sum(npay ** 2);
 
-def numericalGradient (f, x):
+def numericalGradientLine (f, x):
     h = 1e-10;
     grad = np.zeros_like(x);
     for i in range(x.size):
@@ -206,8 +209,29 @@ def numericalGradient (f, x):
         grad[i] = (y2 - y1) / (2 * h);
     return grad;
 
+# 可对于矩阵求梯度的函数
+# def numericalGradient (f, x):
+#     if (x.ndim == 1):
+#         return numericalGradientLine(f, x);
+#     else:
+#         grad = np.zeros_like(x);
+#         for index, line in enumerate(x):
+#             grad[x] = numericalGradientLine(f, line);
+#     return grad;
+
+
+def gradientDescent (f, initX, lr = 0.0001, step = 100):
+    x = initX;
+    for i in range(step):
+        grad = numericalGradient(f, x);
+        x -= x * lr;
+    return x;
+
+
 
 if (__name__ == "__main__"):
     result = getMnist(True, True, True);
-    ary = np.array([3.0, 0.0]);
-    print(numericalGradient(func, ary));
+    ary = np.array([3.0, 4.0]);
+    # print(numericalGradient(func, ary));
+    x = gradientDescent(func, np.array([5.0, -10.0]));
+    print(x);
