@@ -228,10 +228,39 @@ def gradientDescent (f, initX, lr = 0.0001, step = 100):
     return x;
 
 
+class simpleNet:
+    def __init__ (self):
+        # self.w = np.array([
+        #     [-0.30129775, 0.63226888, 0.29906706],
+        #     [0.10313986, -1.6204596, -1.56058255],
+        # ]);
+        self.w = np.array([
+            [-0.63929169, 0.59491399, 0.67441589],
+            [-1.4568322, -1.79286679, 0.1717967],
+        ]);
+    def predict (self, x):
+        return np.dot(x, self.w);
+    def loss (self, x, t):
+        y = self.predict(x);
+        y = softmax(y);
+        loss = crossEntropyErrorMB(y, t);
+        print(y);
+        return loss;
+        
+
+
+
 
 if (__name__ == "__main__"):
     result = getMnist(True, True, True);
-    ary = np.array([3.0, 4.0]);
-    # print(numericalGradient(func, ary));
-    x = gradientDescent(func, np.array([5.0, -10.0]));
-    print(x);
+    net = simpleNet();
+    x = np.array([1.3, 6.0]);
+    t = np.array([0, 0, 1]);
+    net.loss(x, t);
+    def funcNet (w):
+        return net.loss(x, t);
+    for i in range(100):
+        grad = numericalGradient(funcNet, net.w);
+        net.w -= grad * 0.01;
+        # print(grad);
+    print(net.w);
