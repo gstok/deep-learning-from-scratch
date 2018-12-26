@@ -5,6 +5,7 @@ import matplotlib.pylab as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
+# 对于输入参数为numpy数组的函数求偏导数向量（梯度）
 def _numerical_gradient_no_batch(f, x):
     h = 1e-4  # 0.0001
     grad = np.zeros_like(x)
@@ -22,7 +23,7 @@ def _numerical_gradient_no_batch(f, x):
         
     return grad
 
-
+# 兼容单维和多维度numpy数组求梯度
 def numerical_gradient(f, X):
     if X.ndim == 1:
         return _numerical_gradient_no_batch(f, X)
@@ -32,9 +33,9 @@ def numerical_gradient(f, X):
         for idx, x in enumerate(X):
             grad[idx] = _numerical_gradient_no_batch(f, x)
         
-        return grad
+        return grad;
 
-
+# 求梯度的目标函数
 def function_2(x):
     if x.ndim == 1:
         return np.sum(x**2)
@@ -57,8 +58,12 @@ if __name__ == '__main__':
     X = X.flatten()
     Y = Y.flatten()
     
+    # 求梯度
     grad = numerical_gradient(function_2, np.array([X, Y]))
     
+    print(grad.shape);
+    print(grad[0][0], grad[1][0]);
+
     plt.figure()
     plt.quiver(X, Y, -grad[0], -grad[1],  angles="xy",color="#666666")
     plt.xlim([-2, 2])
