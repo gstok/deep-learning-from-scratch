@@ -184,34 +184,28 @@ def crossEntropyErrorMB (x, t):
     batchSize = x.shape[0];
     return -np.sum(t * np.log(x + 1e-7)) / batchSize;
 
+
+# 数值微分求导，求导仅仅对单个自变量求导
+def numericalDiff (f, x):
+    h = 1e-10;
+    return (f(x + h) - f(x - h)) / (2 * h);
+
+def numericalGradient (f, x):
+    print(1);
+
+
+def func (x, y):
+    return x ** 2 + y ** 2;
+
+def func1 (x):
+    return func(x, 4);
+def func2 (y):
+    return func(3, y);
+
+
 if (__name__ == "__main__"):
     result = getMnist(True, True, True);
-
-    # showImgAndLabel(img, label);
-    network = initNetwork();
-    testImg = result[1][0];
-    testLabel = result[1][1];
-    # print(accuracy(testImg, testLabel, network));
-    # t1 = time.time();
-    # result1 = accuracy(testImg, testLabel, network);
-    # t2 = time.time();
-    # print(result1);
-    # print(t2 - t1);
-
-    # t1 = time.time();
-    # result2 = accuracyBatch(testImg, testLabel, network);
-    # t2 = time.time();
-    # print(result2);
-    # print(t2 - t1);
-
-    index = 685;
-    img = result[1][0][index];
-    label = result[1][1][index];
-    y = predict(img, network);
-    r = np.argmax(y);
-    print(y);
-    print(label);
-    print(r);
-    # ce = crossEntropyError(y, label);
-    ce = crossEntropyErrorMB(y, label);
-    print(ce);
+    x = 3;
+    y = 4;
+    print(numericalDiff(func1, x));
+    print(numericalDiff(func2, y));
