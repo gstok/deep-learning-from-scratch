@@ -190,22 +190,24 @@ def numericalDiff (f, x):
     h = 1e-10;
     return (f(x + h) - f(x - h)) / (2 * h);
 
+def func (npay):
+    return np.sum(npay ** 2);
+
 def numericalGradient (f, x):
-    print(1);
-
-
-def func (x, y):
-    return x ** 2 + y ** 2;
-
-def func1 (x):
-    return func(x, 4);
-def func2 (y):
-    return func(3, y);
+    h = 1e-10;
+    grad = np.zeros_like(x);
+    for i in range(x.size):
+        bak = x[i];
+        x[i] = bak + h;
+        y2 = f(x);
+        x[i] = bak - h;
+        y1 = f(x);
+        x[i] = bak;
+        grad[i] = (y2 - y1) / (2 * h);
+    return grad;
 
 
 if (__name__ == "__main__"):
     result = getMnist(True, True, True);
-    x = 3;
-    y = 4;
-    print(numericalDiff(func1, x));
-    print(numericalDiff(func2, y));
+    ary = np.array([3.0, 0.0]);
+    print(numericalGradient(func, ary));

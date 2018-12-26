@@ -20,7 +20,6 @@ def _numerical_gradient_no_batch(f, x):
         grad[idx] = (fxh1 - fxh2) / (2*h)
         
         x[idx] = tmp_val  # 値を元に戻す
-        
     return grad
 
 # 兼容单维和多维度numpy数组求梯度
@@ -60,9 +59,7 @@ if __name__ == '__main__':
     
     # 求梯度
     grad = numerical_gradient(function_2, np.array([X, Y]))
-    
-    print(grad.shape);
-    print(grad[0][0], grad[1][0]);
+
 
     plt.figure()
     plt.quiver(X, Y, -grad[0], -grad[1],  angles="xy",color="#666666")
