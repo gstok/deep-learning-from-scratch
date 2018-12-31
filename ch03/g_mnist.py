@@ -10,7 +10,7 @@ import sys, os;
 try:
     import urllib.request;
 except ImportError:
-    raise ImportError('You should use Python 3.x');
+    raise ImportError("You should use Python 3.x");
 from PIL import Image;
 sys.path.append(os.pardir);
 from common.gradient import numerical_gradient as numericalGradient;
@@ -181,10 +181,13 @@ def crossEntropyError (x, t):
 
 # miniBatch计算交叉熵
 def crossEntropyErrorMB (x, t):
+    # 变换参数格式，相当于套了一个维度，变成了二维数组
     if (x.ndim == 1):
         t = t.reshape(1, t.size);
         x = x.reshape(1, x.size);
+    # 获取参数第一维大小
     batchSize = x.shape[0];
+    # 这里相当于计算交叉熵的平均数
     return -np.sum(t * np.log(x + 1e-7)) / batchSize;
 
 
